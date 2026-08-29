@@ -1339,7 +1339,7 @@
               <label class="block text-xs text-slate-400 mb-1">Banner Announcement Text</label>
               <input type="text" id="admBannerText" value="⚠️ Traffic Alert: Heavy movement near Sriperumbudur Toll Plaza on NH48. Expect 15 mins delay." class="input-field text-xs py-2.5" />
             </div>
-            <button onclick="saveEmergencyBannerSettings()" class="neon-btn-amber text-xs py-2.5">
+            <button onclick="saveEmergencyBannerSettings(this)" class="neon-btn-amber text-xs py-2.5">
               <i class="fa-solid fa-save"></i> Save Traffic Alert Banner
             </button>
           </div>
@@ -1393,7 +1393,7 @@
               <label class="block text-xs text-slate-400 mb-1">Ticker Item 3 (MTC Bus Alert)</label>
               <input type="text" id="admTicker3" value="MTC Route 578, 578P, 578M, 578ET Timelines Updated Live" class="input-field text-xs py-2.5" />
             </div>
-            <button onclick="saveTickerSettings()" class="neon-btn-emerald text-xs py-2.5">
+            <button onclick="saveTickerSettings(this)" class="neon-btn-emerald text-xs py-2.5">
               <i class="fa-solid fa-paper-plane"></i> Publish Live Ticker Broadcast
             </button>
           </div>
@@ -1423,12 +1423,72 @@
               <label class="block text-xs text-slate-400 mb-1">WhatsApp Channel Link</label>
               <input type="url" id="admSocialWa" value="https://whatsapp.com/channel/0029Vb9jqVkDOQIWP51UkE34" class="input-field text-xs py-2.5" />
             </div>
-            <button onclick="saveSocialLinksSettings()" class="neon-btn-amber text-xs py-2.5">
+            <button onclick="saveSocialLinksSettings(this)" class="neon-btn-amber text-xs py-2.5">
               <i class="fa-solid fa-check"></i> Update Social Media Links
             </button>
           </div>
         </div>
 
+        <!-- GitHub REST API Auto-Commit Automation Card -->
+        <div class="glass-card p-6 border-emerald-500/30">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <div>
+              <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-brands fa-github text-emerald-400"></i> GitHub REST API Auto-Commit Integration
+              </h3>
+              <div class="text-xs text-slate-400">Automatically push website updates (WhatsApp link, text, shops, jobs) directly to GitHub</div>
+            </div>
+            <span class="badge-emerald" id="githubSyncStatusBadge"><i class="fa-solid fa-code-commit"></i> Ready</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+            <div>
+              <label class="block text-slate-400 mb-1 font-semibold">GitHub Repo Owner (User/Org)</label>
+              <input type="text" id="admGithubOwner" value="Gopinath0714" placeholder="e.g. Gopinath0714" class="input-field text-xs py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1 font-semibold">GitHub Repository Name</label>
+              <input type="text" id="admGithubRepo" value="Voice-of-Sunguvarchatram" placeholder="e.g. Voice-of-Sunguvarchatram" class="input-field text-xs py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1 font-semibold">Target Branch</label>
+              <input type="text" id="admGithubBranch" value="main" placeholder="e.g. main" class="input-field text-xs py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1 font-semibold">Target File Path</label>
+              <input type="text" id="admGithubFilePath" value="index.html" placeholder="e.g. index.html" class="input-field text-xs py-2" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-slate-400 mb-1 font-semibold">GitHub Personal Access Token (PAT) <span class="text-rose-400">*</span></label>
+              <div class="relative">
+                <input type="password" id="admGithubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="input-field text-xs py-2 pr-10" />
+                <button type="button" onclick="togglePasswordVisibility('admGithubToken', 'ghTokenEyeIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+                  <i class="fa-solid fa-eye" id="ghTokenEyeIcon"></i>
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1">Token requires <code>repo</code> or <code>contents: write</code> scope permissions on GitHub.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="admGithubAutoSync" checked class="w-4 h-4 accent-emerald-500 rounded cursor-pointer" />
+              <label for="admGithubAutoSync" class="text-xs text-slate-300 font-medium cursor-pointer">Auto-commit to GitHub on every Admin Save</label>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+              <button onclick="fetchLatestFromGitHub(true)" class="outline-btn-emerald text-xs py-2 px-3 text-amber-300 border-amber-500/40 hover:bg-amber-500/10">
+                <i class="fa-solid fa-arrows-rotate"></i> Fetch Live Code from GitHub
+              </button>
+              <button onclick="saveGithubConfigSettings()" class="outline-btn-emerald text-xs py-2 px-4">
+                <i class="fa-solid fa-floppy-disk"></i> Save Config
+              </button>
+              <button onclick="commitWebsiteToGitHub('Manual Admin Sync: Update website content')" id="btnManualGhSync" class="neon-btn-emerald text-xs py-2 px-5">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Commit & Push to GitHub Now
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- TAB 5: SECURITY AUDIT LOGS PANEL -->
@@ -2056,6 +2116,7 @@
     /* ==================== INITIALIZATION ==================== */
     document.addEventListener('DOMContentLoaded', () => {
       loadPersistentAdminState();
+      loadGithubConfig();
 
       selectBusRoute('578');
       renderSipcotIndustries('ALL');
@@ -2225,7 +2286,7 @@
       `).join('');
     }
 
-    function deleteShop(shopId) {
+    async function deleteShop(shopId) {
       if (confirm('Are you sure you want to delete this shop listing?')) {
         localShops = localShops.filter(s => s.id !== shopId);
         localStorage.setItem('vos_local_shops_state', JSON.stringify(localShops));
@@ -2233,6 +2294,11 @@
         renderAdminDashboard();
         logSecurityAudit(`Deleted shop ID: ${shopId}`);
         showToast('Shop listing deleted.');
+
+        const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+        if (autoSync) {
+          await commitWebsiteToGitHub(`Delete shop listing ID ${shopId}`);
+        }
       }
     }
 
@@ -2259,7 +2325,7 @@
       `).join('');
     }
 
-    function toggleJobStatus(jobId) {
+    async function toggleJobStatus(jobId) {
       const job = jobListings.find(j => j.id === jobId);
       if (job) {
         job.active = !job.active;
@@ -2268,10 +2334,15 @@
         renderPublicJobs();
         logSecurityAudit(`Toggled job status ID ${jobId} to ${job.active}`);
         showToast(`Job ${job.active ? 'activated' : 'deactivated'}.`);
+
+        const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+        if (autoSync) {
+          await commitWebsiteToGitHub(`Toggle status for job ID ${jobId}`);
+        }
       }
     }
 
-    function deleteJob(jobId) {
+    async function deleteJob(jobId) {
       if (confirm('Delete this job posting?')) {
         jobListings = jobListings.filter(j => j.id !== jobId);
         localStorage.setItem('vos_jobs_state', JSON.stringify(jobListings));
@@ -2279,10 +2350,15 @@
         renderPublicJobs();
         logSecurityAudit(`Deleted job ID: ${jobId}`);
         showToast('Job posting deleted.');
+
+        const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+        if (autoSync) {
+          await commitWebsiteToGitHub(`Delete job vacancy ID ${jobId}`);
+        }
       }
     }
 
-    function handleAdminAddJobSubmit(e) {
+    async function handleAdminAddJobSubmit(e) {
       e.preventDefault();
       const newJob = {
         id: 'job-' + Date.now(),
@@ -2305,6 +2381,11 @@
       logSecurityAudit(`Published new job vacancy: ${newJob.title}`);
       showToast('New job vacancy published!');
       e.target.reset();
+
+      const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+      if (autoSync) {
+        await commitWebsiteToGitHub(`Publish new job: ${newJob.title}`);
+      }
     }
 
     function renderAdminSipcotGrid() {
@@ -2318,14 +2399,19 @@
     }
 
     /* Tab 3 & 4 Settings Savers */
-    function saveEmergencyBannerSettings() {
+    async function saveEmergencyBannerSettings(btnElement = null) {
       emergencyTrafficAlert.active = document.getElementById('admBannerToggle').checked;
       emergencyTrafficAlert.text = escapeHTML(document.getElementById('admBannerText').value);
 
       localStorage.setItem('vos_traffic_state', JSON.stringify(emergencyTrafficAlert));
       updateEmergencyBannerUI();
       logSecurityAudit(`Emergency Traffic Alert Banner updated`);
-      showToast('Emergency Traffic Alert Banner updated!');
+      showToast('Emergency Traffic Alert Banner saved!');
+
+      const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+      if (autoSync) {
+        await commitWebsiteToGitHub('Update Emergency Traffic Alert Banner', btnElement);
+      }
     }
 
     function updateEmergencyBannerUI() {
@@ -2339,7 +2425,7 @@
       }
     }
 
-    function saveTickerSettings() {
+    async function saveTickerSettings(btnElement = null) {
       tickerAlerts = [
         escapeHTML(document.getElementById('admTicker1').value),
         escapeHTML(document.getElementById('admTicker2').value),
@@ -2350,6 +2436,11 @@
       updateTickerUI();
       logSecurityAudit(`Header Marquee Ticker updated`);
       showToast('Header Marquee Ticker broadcasted live!');
+
+      const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+      if (autoSync) {
+        await commitWebsiteToGitHub('Update Marquee Ticker announcements', btnElement);
+      }
     }
 
     function updateTickerUI() {
@@ -2364,7 +2455,7 @@
       ticker.innerHTML = itemsHtml + itemsHtml; // Duplicate for seamless loop
     }
 
-    function saveSocialLinksSettings() {
+    async function saveSocialLinksSettings(btnElement = null) {
       socialMediaLinks = {
         insta: escapeHTML(document.getElementById('admSocialInsta').value),
         yt: escapeHTML(document.getElementById('admSocialYt').value),
@@ -2375,14 +2466,216 @@
       localStorage.setItem('vos_social_state', JSON.stringify(socialMediaLinks));
       updateSocialLinksUI();
       logSecurityAudit(`Social media links updated`);
-      showToast('Social media links saved!');
+      showToast('Social media links saved locally!');
+
+      const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+      if (autoSync) {
+        await commitWebsiteToGitHub('Update social media links via Admin', btnElement);
+      }
     }
 
     function updateSocialLinksUI() {
-      document.getElementById('linkInsta').href = socialMediaLinks.insta;
-      document.getElementById('linkYt').href = socialMediaLinks.yt;
-      document.getElementById('linkFb').href = socialMediaLinks.fb;
-      document.getElementById('linkWa').href = socialMediaLinks.wa;
+      if (document.getElementById('linkInsta')) document.getElementById('linkInsta').href = socialMediaLinks.insta;
+      if (document.getElementById('linkYt')) document.getElementById('linkYt').href = socialMediaLinks.yt;
+      if (document.getElementById('linkFb')) document.getElementById('linkFb').href = socialMediaLinks.fb;
+      if (document.getElementById('linkWa')) document.getElementById('linkWa').href = socialMediaLinks.wa;
+    }
+
+
+    /* ==================== REAL-TIME GITHUB REST API ENGINE ==================== */
+    function loadGithubConfig() {
+      try {
+        const token = localStorage.getItem('vos_gh_token') || '';
+        const owner = localStorage.getItem('vos_gh_owner') || 'Gopinath0714';
+        const repo = localStorage.getItem('vos_gh_repo') || 'Voice-of-Sunguvarchatram';
+        const branch = localStorage.getItem('vos_gh_branch') || 'main';
+        const filePath = localStorage.getItem('vos_gh_file_path') || 'index.html';
+        const autoSync = localStorage.getItem('vos_gh_auto_sync') !== 'false';
+
+        if (document.getElementById('admGithubToken')) document.getElementById('admGithubToken').value = token;
+        if (document.getElementById('admGithubOwner')) document.getElementById('admGithubOwner').value = owner;
+        if (document.getElementById('admGithubRepo')) document.getElementById('admGithubRepo').value = repo;
+        if (document.getElementById('admGithubBranch')) document.getElementById('admGithubBranch').value = branch;
+        if (document.getElementById('admGithubFilePath')) document.getElementById('admGithubFilePath').value = filePath;
+        if (document.getElementById('admGithubAutoSync')) document.getElementById('admGithubAutoSync').checked = autoSync;
+      } catch (e) {}
+    }
+
+    function saveGithubConfigSettings() {
+      const token = document.getElementById('admGithubToken').value.trim();
+      const owner = document.getElementById('admGithubOwner').value.trim() || 'Gopinath0714';
+      const repo = document.getElementById('admGithubRepo').value.trim() || 'Voice-of-Sunguvarchatram';
+      const branch = document.getElementById('admGithubBranch').value.trim() || 'main';
+      const filePath = document.getElementById('admGithubFilePath').value.trim() || 'index.html';
+      const autoSync = document.getElementById('admGithubAutoSync').checked;
+
+      localStorage.setItem('vos_gh_token', token);
+      localStorage.setItem('vos_gh_owner', owner);
+      localStorage.setItem('vos_gh_repo', repo);
+      localStorage.setItem('vos_gh_branch', branch);
+      localStorage.setItem('vos_gh_file_path', filePath);
+      localStorage.setItem('vos_gh_auto_sync', autoSync);
+
+      logSecurityAudit('Saved GitHub REST API Configuration');
+      showToast('GitHub configuration saved!');
+    }
+
+    async function fetchLatestFromGitHub(notify = false) {
+      const owner = localStorage.getItem('vos_gh_owner') || 'Gopinath0714';
+      const repo = localStorage.getItem('vos_gh_repo') || 'Voice-of-Sunguvarchatram';
+      const branch = localStorage.getItem('vos_gh_branch') || 'main';
+      const filePath = localStorage.getItem('vos_gh_file_path') || 'index.html';
+      const token = localStorage.getItem('vos_gh_token') || '';
+
+      const badge = document.getElementById('githubSyncStatusBadge');
+      if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Fetching...`;
+
+      try {
+        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}?t=${Date.now()}`;
+        const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(rawUrl, { cache: 'no-store', headers });
+        if (res.ok) {
+          if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Live Data Synced`;
+          if (notify) showToast('✅ Real-time code fetched directly from GitHub!');
+          return true;
+        } else {
+          if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-info"></i> Local Mode`;
+          if (notify) showToast('ℹ️ Using active portal data.');
+          return false;
+        }
+      } catch (e) {
+        if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-info"></i> Local Mode`;
+        return false;
+      }
+    }
+
+    async function commitWebsiteToGitHub(commitMessage = 'Update website content via Admin Portal', btnElement = null) {
+      const token = localStorage.getItem('vos_gh_token') || (document.getElementById('admGithubToken') ? document.getElementById('admGithubToken').value.trim() : '');
+      const owner = localStorage.getItem('vos_gh_owner') || 'Gopinath0714';
+      const repo = localStorage.getItem('vos_gh_repo') || 'Voice-of-Sunguvarchatram';
+      const branch = localStorage.getItem('vos_gh_branch') || 'main';
+      const filePath = localStorage.getItem('vos_gh_file_path') || 'index.html';
+
+      let origBtnHtml = '';
+      if (btnElement) {
+        origBtnHtml = btnElement.innerHTML;
+        btnElement.disabled = true;
+        btnElement.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Syncing to GitHub...`;
+      }
+
+      const badge = document.getElementById('githubSyncStatusBadge');
+      if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Committing...`;
+
+      try {
+        // Ensure DOM attributes are updated before serializing HTML
+        updateSocialLinksUI();
+        updateEmergencyBannerUI();
+        updateTickerUI();
+
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+        // 1. Attempt Next.js Server API endpoint first if available
+        try {
+          const apiRes = await fetch('/api/admin/github-commit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              path: filePath,
+              content: htmlContent,
+              commitMessage: commitMessage
+            })
+          });
+
+          if (apiRes.ok) {
+            const data = await apiRes.json();
+            const shortSha = data.sha ? data.sha.substring(0, 7) : 'head';
+            if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Synced (${shortSha})`;
+            logSecurityAudit(`Committed ${filePath} to GitHub via Server API route`);
+            showToast(`🚀 Saved & pushed to GitHub! (Commit: ${shortSha})`);
+            if (btnElement) {
+              btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Saved & Synced!`;
+              setTimeout(() => { btnElement.innerHTML = origBtnHtml; btnElement.disabled = false; }, 2500);
+            }
+            return true;
+          }
+        } catch (e) {}
+
+        if (!token) {
+          showToast('⚠️ GitHub PAT Token missing. Configure it in Admin Settings.');
+          if (badge) badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i> PAT Token Missing`;
+          if (btnElement) { btnElement.innerHTML = origBtnHtml; btnElement.disabled = false; }
+          return false;
+        }
+
+        // 2. Direct GitHub REST API integration (PUT /repos/{owner}/{repo}/contents/{filePath})
+        const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}&t=${Date.now()}`;
+        const getRes = await fetch(getUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Cache-Control': 'no-cache'
+          },
+          cache: 'no-store'
+        });
+
+        let sha = null;
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        // Base64 encode UTF-8 content safely
+        const encoder = new TextEncoder();
+        const data = encoder.encode(htmlContent);
+        let binary = '';
+        const bytes = new Uint8Array(data);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64Content = btoa(binary);
+
+        const putUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+        const putRes = await fetch(putUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: commitMessage,
+            content: base64Content,
+            sha: sha,
+            branch: branch
+          })
+        });
+
+        const resData = await putRes.json();
+        if (putRes.ok) {
+          const shortSha = resData.content?.sha?.substring(0, 7) || 'HEAD';
+          if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Synced (${shortSha})`;
+          logSecurityAudit(`GitHub REST API auto-commit successful. SHA: ${shortSha}`);
+          showToast(`🚀 Saved & pushed to GitHub! (Commit: ${shortSha})`);
+          if (btnElement) {
+            btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Saved & Synced!`;
+            setTimeout(() => { btnElement.innerHTML = origBtnHtml; btnElement.disabled = false; }, 2500);
+          }
+          return true;
+        } else {
+          if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Commit Failed`;
+          const errDetail = resData.message || 'Check PAT token permissions';
+          showToast(`❌ GitHub Sync Error: ${errDetail}`);
+          if (btnElement) { btnElement.innerHTML = origBtnHtml; btnElement.disabled = false; }
+          return false;
+        }
+      } catch (err) {
+        if (badge) badge.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Network Error`;
+        showToast(`❌ GitHub Connection Error: ${err.message}`);
+        if (btnElement) { btnElement.innerHTML = origBtnHtml; btnElement.disabled = false; }
+        return false;
+      }
     }
 
 
